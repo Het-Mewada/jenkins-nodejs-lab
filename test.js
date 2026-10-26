@@ -5,6 +5,6 @@ function add(a, b) {
     return a + b;
 }
 
-assert.equal(add(2, 3), 5);
+assert.equal(add(2, 3), 999);
 
 console.log('All tests passed!');
