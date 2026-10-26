@@ -2,30 +2,32 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs 'NodeJS-22'
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Verify Runtime') {
             steps {
-                echo 'Jenkins has loaded this pipeline from GitHub.'
-                checkout scm
+                sh 'node --version'
+                sh 'npm --version'
             }
         }
 
-        stage('Inspect Project') {
+        stage('Test') {
             steps {
-                sh 'pwd'
-                sh 'ls -la'
-                sh 'cat package.json'
+                sh 'npm test'
             }
         }
     }
 
     post {
         success {
-            echo 'GitHub checkout completed successfully!'
+            echo 'All tests passed!'
         }
 
         failure {
-            echo 'Something failed. Check the console logs.'
+            echo 'The pipeline failed. Check the console output.'
         }
     }
 }
