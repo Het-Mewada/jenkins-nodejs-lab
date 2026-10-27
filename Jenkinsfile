@@ -7,10 +7,11 @@ pipeline {
     }
 
     stages {
-        stage('Verify Runtime') {
+        stage('Install Dependencies') {
             steps {
                 sh 'node --version'
                 sh 'npm --version'
+                sh 'npm ci'
             }
         }
 
@@ -19,15 +20,27 @@ pipeline {
                 sh 'npm test'
             }
         }
+
+        stage('Package') {
+            steps {
+                sh 'node --version'
+                sh 'printf "Build completed successfully.\\n" > build-info.txt'
+                archiveArtifacts artifacts: 'build-info.txt', fingerprint: true
+            }
+        }
     }
 
     post {
         success {
-            echo 'All tests passed!'
+            echo 'CI pipeline passed!'
         }
 
         failure {
-            echo 'The pipeline failed. Check the console output.'
+            echo 'CI pipeline failed. Check the stage logs.'
+        }
+
+        always {
+            echo 'Pipeline execution finished.'
         }
     }
 }
