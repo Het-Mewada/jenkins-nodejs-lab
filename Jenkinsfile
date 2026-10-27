@@ -10,7 +10,6 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh 'node --version'
-                sh 'npm --version'
                 sh 'npm ci'
             }
         }
@@ -23,24 +22,29 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh 'node --version'
                 sh 'printf "Build completed successfully.\\n" > build-info.txt'
-                archiveArtifacts artifacts: 'build-info.txt', fingerprint: true
+                archiveArtifacts(
+                    artifacts: 'build-info.txt',
+                    fingerprint: true
+                )
             }
         }
     }
 
     post {
+        always {
+            junit(
+                testResults: 'reports/junit.xml',
+                allowEmptyResults: true
+            )
+        }
+
         success {
             echo 'CI pipeline passed!'
         }
 
         failure {
-            echo 'CI pipeline failed. Check the stage logs.'
-        }
-
-        always {
-            echo 'Pipeline execution finished.'
+            echo 'CI pipeline failed. Check the test report.'
         }
     }
 }
